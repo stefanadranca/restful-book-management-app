@@ -1,0 +1,102 @@
+Dranca Stefana-Ioana, 324CC, TEMA 3 PC
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Client Web. Comunicatie cu REST API
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Pentru implementarea programului am pornit de la functiile din laboratorul 10, preluand din
+cadrul acestuia fisierele buffer.c, buffer.h, helpers.c, helpers.h, requests.c, requests.h. 
+Am modificat unele functii din aceste fisiere (compute_get_request, compute_post_request)
+si am adaugat functia de compute_delete_request.
+
+Am ales sa utilizez biblioteca de parsare JSON: PARSON.C, deoarece functiile regasite in
+aceasta m-au ajutat sa creez stringurile ce respecta formatul JSON cu usurinta, pentru
+a putea fi transmise serverului, in cadrul comenzilor: "register", "login", si "add_book".
+
+In fisierul "client.c" am implementat programul care primeste comenzi de la tastatura,
+intr-un loop while, le interpreteaza si trimite serverului cereri, in functie de acestea.
+
+INSTRUCTIUNI: Makefile
+	-> make => compilare
+	-> make run => rulare
+	-> make clean
+
+________________
+
+comanda register
+________________
+Deschide conexiunea cu serverul, pregateste un POST request, cu ajutorul functiei auxiliare
+auth_json(), care citeste de la tastatura numele utilizatorului si parola si le introduce
+intr-un string ce respecta formatul JSON, ce va fi interpretat de server. Trimite requestul
+catre server si asteapta raspunsul. Printeaza cu ajutorul functiei print_out() fie "SUCCES",
+atunci cand inregistrarea s-a realizat cu succes, fie ERROR si eroarea primita de la server,
+in cazul in care inregistrarea nu s-a putut realiza.
+
+_____________
+
+comanda login
+_____________
+Deschide conexiunea cu serverul, pregateste un POST request, cu ajutorul functiei auxiliare
+auth_json(), care citeste de la tastatura numele utilizatorului si parola si le introduce
+intr-un string ce respecta formatul JSON, ce va fi interpretat de server. Dupa ce trimite
+requestul serverului si primeste raspunsul extrage din acesta cookie-ul de sesiune si
+apeleaza functia print_out().
+
+_____________________
+
+comanda enter_library
+_____________________
+Se deschide conexiunea cu serverul si se trimite un GET request serverului, incluzand cookie-ul
+anetrior. Din raspunsul primit se extrage tokenul JWT. Se afiseaza SUCCES sau ERROR, in functie
+de situatie. 
+
+_________________
+
+comanda get_books
+_________________
+Se deschide conexiunea si se trimite un GET request serverului, inlcuzand atat cookie-ul, cat si
+token-ul. Din raspunsul primit se extrage lista de obiecte JSON si se afiseaza, in cazul in care
+nu apar erori. Daca nu exista carti pentru utilizatorul logat se va afisa "Nothing to show".
+
+________________
+                
+comanda get_book
+________________
+Se deschide conexiunea cu serverul si se cere utilizatorului sa introduca id-ul cartii dorite,
+pentru a putea construi calea de acces pentru GET request. Dupa trimiterea requestului catre
+server, din raspunsul primit se extrage obiectul JSON cu detaliile despre carte sau ERROR,
+in cazul in care nu exista o carte cu id-ul introdus in biblioteca utilizatorului logat.
+
+________________
+
+comanda add_book
+________________
+Se deschide conexiunea cu serverul si se pregateste mesajul de tip POST request ce va fi
+trimis serverului. De data aceasta, se apeleaza functia book_details_json() care cere
+utilizatorului datele cartii pe care vrea sa o introduca in biblioteca si construieste cu
+ajutorul functiilor din parson.c un string ce respecta formatul JSON, cu aceste date.
+Dupa trimiterea mesajului catre server, se asteapta raspunsul si se printeaza
+SUCCESS sau ERROR, in functie de acesta.
+
+___________________
+
+comanda delete_book
+___________________
+Aceasta comanda este foarte asemanatoare cu get_book. Singura diferenta este tipul
+requestului, care in acest caz este DELETE. Am implementat in requests.c functia
+compute_delete_request. 
+
+______________
+
+comanda logout
+______________
+Pentru comanda logout, se efectueaza o cerere de tip GET, in care este inclus atat
+cookie-ul, cat si token-ul. La primirea raspunsului de la server, se verifica daca
+a aparut o eroare, caz in care aceasta se afiseaza. In cazul in care utilizatorul
+a fost delogat cu succes se sterg cookie-ul si token-ul.
+
+____________
+
+comanda exit
+____________
+Determina iesirea din bucla while infinita.
